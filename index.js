@@ -5,12 +5,48 @@ const multer = require("multer");
 const app = express();
 
 app.set("view engine", "ejs");
-
-app.use(express.static(path.join(__dirname, "public")));
+// Public Folder
+app.use(express.static("./public"));
 
 app.get("/", function (req, res) {
   res.render("index");
 });
+
+// Set The Storage Engine
+const storage = multer.diskStorage({
+  destination: "./public/uploads/",
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+// Init Upload
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1000000 },
+  fileFilter: function (req, file, cb) {
+    checkFileType(file, cb);
+  },
+}).single("myImage");
+
+// Check File Type
+function checkFileType(file, cb) {
+  // Allowed ext
+  const filetypes = /jpeg|mp4|png|gif/;
+  // Check ext
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  // Check mime
+  const mimetype = filetypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb("Error: Images Only!");
+  }
+}
 
 app.get("/video", function (req, res) {
   const path = "assets/sample.mp4";
@@ -55,8 +91,28 @@ app.get("/upload", (req, res) => {
   res.render("upload");
 });
 
-app.post("/uploadfile", (req, res) => {});
+app.post("/uploadfile", (req, res) => {
+  console.log(req.file);
 
-app.listen(3000, function () {
-  console.log("Listening on port 3000!");
+  upload(req, res, (err) => {
+    if (err) {
+      console.log(`The error is - ${err}`);
+      res.render("index");
+    } else {
+      if (req.file == undefined) {
+        console.log("ERROOOOOOOR");
+      } else {
+        console.log("working");
+
+        res.render("index", {
+          msg: "File Uploaded!",
+          file: `uploads/${req.file.filename}`,
+        });
+      }
+    }
+  });
+});
+
+app.listen(4500, function () {
+  console.log("Listening on port 3001!");
 });

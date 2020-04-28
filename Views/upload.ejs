@@ -19,10 +19,22 @@
   </head>
   <body>
     <!--  SINGLE FILE -->
-    <form action="/uploadfile" enctype="multipart/form-data" method="POST">
+    <form action="/uploadfile" method="POST" enctype="multipart/form-data">
+      <div class="file-field input-field">
+        <div class="btn grey">
+          <span>File</span>
+          <input name="myImage" type="file" />
+        </div>
+        <div class="file-path-wrapper">
+          <input class="file-path validate" type="text" />
+        </div>
+      </div>
+      <button type="submit" class="btn">Submit</button>
+    </form>
+    <!-- <form action="/uploadfile" enctype="multipart/form-data" method="POST">
       <input type="file" name="myFile" />
       <input type="submit" value="Upload a file" />
-    </form>
+    </form> -->
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script
